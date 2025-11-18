@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Jongeren Footprint — Test</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --blue:#1e5ad6; --soft:#eef4ff; --accent:#4f8cff; --glass: rgba(255,255,255,0.7);
+      --card-shadow: 0 12px 40px rgba(19,40,80,0.08);
+      --round:14px;
+    }
+    *{box-sizing:border-box}
+    body{font-family:Inter,system-ui,Arial,sans-serif;background:linear-gradient(180deg,#f7fbff 0%,#eef4ff 100%);margin:0;color:#123;}
+
+    /* HEADER */
+    .topbar{display:flex;align-items:center;gap:18px;padding:22px 28px}
+    .brand{display:flex;flex-direction:column;gap:4px}
+    .brand h1{font-size:18px;margin:0;color:var(--blue);letter-spacing:0.2px}
+    .brand .sub{font-size:12px;color:#456;opacity:0.9}
+    .authors{font-size:12px;color:#234;margin-left:auto;padding-right:20px}
+
+    /* LAYOUT */
+    .container{max-width:1100px;margin:28px auto;padding:20px}
+    .card{background:white;border-radius:var(--round);box-shadow:var(--card-shadow);overflow:hidden}
+
+    /* HERO */
+    .hero{display:flex;gap:30px;padding:36px}
+    .hero-left{flex:1;padding-right:12px}
+    .hero h2{margin:0 0 12px;font-size:24px;color:#0f3d91}
+    .hero p{margin:0 0 18px;color:#334}
+    .hero .start-btn{display:inline-flex;align-items:center;gap:10px;padding:12px 18px;background:linear-gradient(90deg,var(--accent),var(--blue));color:white;border-radius:12px;border:none;font-weight:600;cursor:pointer;box-shadow:0 8px 20px rgba(34,90,220,0.16);transition:transform .18s}
+    .hero .start-btn:hover{transform:translateY(-3px)}
+    .hero-right{width:360px}
+    .info-box{background:linear-gradient(180deg,#fff 0,#f6fbff 100%);padding:14px;border-radius:12px;border:1px solid rgba(20,80,200,0.06)}
+    .info-box h3{margin:0 0 8px;font-size:15px;color:var(--blue)}
+    .info-box p{margin:0;color:#556;font-size:13px}
+
+    /* OVERLAY (grey background when test active) */
+    .overlay{position:fixed;inset:0;background:rgba(10,15,25,0.45);backdrop-filter:blur(2px);display:none;align-items:center;justify-content:center;padding:20px;z-index:60}
+    .test-panel{width:100%;max-width:880px;background:linear-gradient(180deg,#ffffffee,#f8fbff);border-radius:16px;padding:22px;box-shadow:0 30px 80px rgba(10,20,60,0.35);transform:translateY(20px);opacity:0;transition:all .32s}
+    .overlay.show{display:flex}
+    .overlay.show .test-panel{transform:translateY(0);opacity:1}
+
+    /* TEST HEADER */
+    .test-header{display:flex;align-items:center;gap:12px;margin-bottom:8px}
+    .test-title{font-weight:700;color:var(--blue);font-size:18px}
+    .test-sub{font-size:13px;color:#345}
+    .progress{height:10px;background:rgba(20,40,120,0.06);border-radius:10px;overflow:hidden;margin-left:auto;width:240px}
+    .progress > i{display:block;height:100%;background:linear-gradient(90deg,var(--accent),var(--blue));width:0%;transition:width .28s}
+
+    /* SLIDES */
+    .slides{position:relative;min-height:240px}
+    .slide{display:none;padding:18px 6px;transition:opacity .25s;}
+    .slide.active{display:block}
+    .question{font-size:16px;font-weight:600;margin-bottom:10px}
+    .answers{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+
+    .option{background:var(--glass);padding:12px;border-radius:12px;border:1px solid rgba(18,40,80,0.04);cursor:pointer;transition:transform .12s,box-shadow .12s}
+    .option:hover{transform:translateY(-6px);box-shadow:0 12px 30px rgba(10,40,120,0.06)}
+    .option.selected{background:linear-gradient(90deg,#e7f2ff,#f3f8ff);border:1px solid rgba(34,90,220,0.14)}
+    .option small{display:block;color:#456;margin-top:6px}
+
+    .nav{display:flex;justify-content:space-between;align-items:center;margin-top:16px;gap:12px}
+    .nav .btn{background:#fff;padding:12px 14px;border-radius:12px;border:1px solid rgba(10,20,60,0.06);cursor:pointer;box-shadow:0 8px 20px rgba(10,20,60,0.03)}
+    .nav .next{background:linear-gradient(90deg,var(--accent),var(--blue));color:white;border:none}
+
+    .meta{font-size:13px;color:#456}
+
+    /* RESULTS */
+    .result-card{padding:18px;border-radius:12px;background:linear-gradient(180deg,#fff,#fbfeff);border:1px solid rgba(18,40,80,0.04);margin-top:12px}
+
+    /* Responsive */
+    @media(max-width:880px){.hero{flex-direction:column}.hero-right{width:100%}.answers{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <div class="topbar container">
+    <div class="brand">
+      <h1>Jongeren Footprint</h1>
+      <div class="sub">Test voor 15–18 jaar — Meet je CO₂-impact</div>
+    </div>
+    <div class="authors">Door: Ivan • Pieter • Pim • Lars</div>
+  </div>
+
+  <div class="container">
+    <div class="card hero">
+      <div class="hero-left">
+        <h2>Wat is je CO₂-voetafdruk?</h2>
+        <p>Vul de test in (ongeveer 30 vragen) gericht op jongeren. We vragen over vervoer, voeding, spullen en dagelijkse gewoontes — duidelijk, kort en professioneel.</p>
+        <button class="start-btn" id="startTest"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" style="transform:translateY(-1px)"><path d="M5 3v18l15-9L5 3z" fill="currentColor"/></svg>Start de test</button>
+      </div>
+      <div class="hero-right">
+        <div class="info-box">
+          <h3>Handig bij het invullen</h3>
+          <p>Het helpt als je weet: reisgedrag, aantal doucherondes, hoeveel kleding je koopt en of je vaak vliegt.</p>
+        </div>
+      </div>
+    </div>
+
+    <p style="color:#445;margin-top:12px">Met deze test krijg je een score en tips om je voetafdruk te verlagen — speciaal uitgelegd voor jongeren.</p>
+
+    <div style="height:18px"></div>
+
+    <div class="card" style="padding:18px">
+      <h3 style="margin:0 0 12px;color:var(--blue)">Wat wordt gemeten?</h3>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px">
+        <div class="info-box" style="padding:12px;border-radius:10px">Vervoer<br><small>Auto, fiets, ov, vliegtuig</small></div>
+        <div class="info-box" style="padding:12px;border-radius:10px">Voeding<br><small>Minder vlees = minder CO₂</small></div>
+        <div class="info-box" style="padding:12px;border-radius:10px">Consumptie<br><small>Kleding en gadgets</small></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Overlay test -->
+  <div class="overlay" id="overlay">
+    <div class="test-panel">
+      <div class="test-header">
+        <div>
+          <div class="test-title">Jongeren Footprint — Test</div>
+          <div class="test-sub">Vul de vragen in — klik op het pijltje om verder te gaan</div>
+        </div>
+        <div class="progress" aria-hidden>
+          <i id="progressBar"></i>
+        </div>
+      </div>
+
+      <div class="slides" id="slides">
+        <!-- We'll inject 30 slides here with JS for compactness but include HTML fallback for first few -->
+      </div>
+
+      <div class="nav">
+        <div class="meta" id="metaText">Vraag <span id="current">1</span> van <span id="total">30</span></div>
+        <div style="display:flex;gap:8px">
+          <button class="btn" id="prevBtn">⬅ Terug</button>
+          <button class="btn next" id="nextBtn">Volgende ➜</button>
+        </div>
+      </div>
+
+      <div id="resultArea" style="display:none;margin-top:12px">
+        <div class="result-card" id="resultCard"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /* ====== QUESTIONS (30) ====== */
+    const questions = [
+      {q:"Hoe vaak ga je per week met de auto (meerijden)?", opts:[['Nooit',0],['1-2x',1],['3-5x',3],['6+ x',6]]},
+      {q:"Hoe vaak fiets je naar school of vrienden?", opts:[['Nooit',0],['1-2x',1],['Meestal',0],['Altijd',0]]},
+      {q:"Hoe vaak neem je het OV per week?", opts:[['Nooit',0],['1-2x',1],['3-5x',3],['Dagelijks',5]]},
+      {q:"Hoe vaak vlieg je per jaar op vakantie?", opts:[['Nooit',0],['1x',5],['2x',10],['3+ x',18]]},
+      {q:"Hoe lang douche je gemiddeld (minuten)?", opts:[['0-5',1],['6-10',3],['11-15',5],['15+',8]]},
+      {q:"Hoe vaak eet je vlees per week?", opts:[['Nooit',1],['1-2x',2],['3-5x',4],['Dagelijks',7]]},
+      {q:"Hoeveel zuivel gebruik je per dag? (glas melk, yoghurt) ", opts:[['Weinig',1],['Soms',3],['Veel',6],['Dagelijks',6]]},
+      {q:"Koop je vaak nieuwe kleding?", opts:[['Nooit / tweedehands',1],['Elke paar maanden',3],['Elke maand',6],['Meerdere keren per maand',10]]},
+      {q:"Hoe vaak koop je nieuwe gadgets (jaar)?", opts:[['Zelden',0],['Een paar per jaar',3],['Elk kwartaal',6],['Maandelijks',10]]},
+      {q:"Recycle je thuis?", opts:[['Altijd',0],['Soms',3],['Nooit',6],['Weet ik niet',3]]},
+      {q:"Hoe vaak gebruik je verwarmingsinstallatie in koude maanden?", opts:[['Zelden',1],['Normaal',3],['Veel',6],['Altijd vol aan',9]]},
+      {q:"Schakel je apparaten volledig uit (niet stand-by)?", opts:[['Altijd',0],['Soms',3],['Nooit',6],['Weet niet',3]]},
+      {q:"Gebruik je LED-verlichting thuis?", opts:[['Ja',0],['Deels',2],['Nee',5],['Weet ik niet',2]]},
+      {q:"Hoe ver woon je van school (en ga je ernaartoe)?", opts:[['<3km (fietsen)',0],['3-10km',2],['10-30km',4],['>30km',7]]},
+      {q:"Doe je elektronische apparaten uit op vakantie of laat je ze aan?", opts:[['Uit',0],['Soms',3],['Aan',6],['Weet niet',3]]},
+      {q:"Hoeveel voedsel gooi je gemiddeld per week weg?", opts:[['Weinig',0],['Iets',3],['Veel',6],['Onnodig veel',9]]},
+      {q:"Hoe vaak eet je uit of bezorgmaaltijden?", opts:[['Zelden',1],['1-2x p/w',3],['Meerdere keren p/w',6],['Bijna elke dag',9]]},
+      {q:"Koop je vaak producten met veel verpakkingsmateriaal?", opts:[['Nee',0],['Soms',3],['Vaak',6],['Altijd',9]]},
+      {q:"Heb je een eigen auto (of vaak alleen in auto)?", opts:[['Nee',0],['Soms alleen',3],['Vaak alleen',6],['Ja, dagelijks',9]]},
+      {q:"Gebruik je energiezuinige instellingen op je devices?", opts:[['Ja',0],['Soms',3],['Nooit',6],['Weet ik niet',3]]},
+      {q:"Hoe vaak vervang je je telefoon of laptop?", opts:[['>3 jaar',0],['2-3 jaar',2],['1-2 jaar',5],['<1 jaar',9]]},
+      {q:"Kook je elektrische apparaten vaak (ov, magnetron)?", opts:[['Zelden',0],['Soms',2],['Dagelijks',4],['Meerdere keren p/d',6]]},
+      {q:"Gebruik je groene stroom thuis (zonnepanelen/eco-leverancier)?", opts:[['Ja',0],['Deels',2],['Nee',6],['Weet ik niet',3]]},
+      {q:"Hoeveel water gebruik je (douchen, bad)?", opts:[['Zuinig',1],['Normaal',3],['Veel',6],['Heel veel',9]]},
+      {q:"Doe je mee aan klimaatacties of bewustwording (schoolprojecten)?", opts:[['Ja vaak',0],['Af en toe',2],['Nooit',6],['Wil ik nog doen',1]]},
+      {q:"Hoe vaak gebruik je spullen meerdere keren (hergebruiken)?", opts:[['Altijd',0],['Meestal',1],['Soms',3],['Nooit',6]]},
+      {q:"Hoe vaak bestel je kleding online (met retouren)?", opts:[['Zelden',1],['1-2x p/m',3],['Elke week',6],['Meerdere keren p/w',9]]},
+      {q:"Hoe vaak ga je met vrienden uit (eten, bios, etc.) per week?", opts:[['Zelden',1],['1-2x',3],['3-4x',5],['Elke week veel',8]]},
+      {q:"Hoeveel aandacht besteed je aan duurzaamheid bij aankopen?", opts:[['Altijd',0],['Soms',2],['Zelden',6],['Nooit',9]]}
+    ];
+
+    const total = questions.length;
+    document.getElementById('total').innerText = total;
+
+    /* build slides */
+    const slidesEl = document.getElementById('slides');
+    questions.forEach((itm, idx)=>{
+      const s = document.createElement('div'); s.className='slide'; s.id='slide-'+idx;
+      const q = document.createElement('div'); q.className='question'; q.innerText = itm.q;
+      const answers = document.createElement('div'); answers.className='answers';
+      itm.opts.forEach(opt=>{
+        const op = document.createElement('div'); op.className='option'; op.tabIndex=0; op.innerHTML=`<div>${opt[0]}</div><small>impact: ${opt[1]}</small>`;
+        op.dataset.value = opt[1];
+        op.addEventListener('click',()=>{ selectOption(idx,op); });
+        op.addEventListener('keydown',(e)=>{ if(e.key==='Enter') selectOption(idx,op); });
+        answers.appendChild(op);
+      });
+      s.appendChild(q); s.appendChild(answers); slidesEl.appendChild(s);
+    });
+
+    /* state */
+    let current = 0; const answersState = new Array(total).fill(null);
+    const overlay = document.getElementById('overlay');
+    const startBtn = document.getElementById('startTest');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const progressBar = document.getElementById('progressBar');
+    const currentEl = document.getElementById('current');
+    const resultCard = document.getElementById('resultCard');
+    const resultArea = document.getElementById('resultArea');
+
+    function openTest(){ overlay.classList.add('show'); showSlide(0); }
+    startBtn.addEventListener('click', openTest);
+
+    function showSlide(i){
+      if(i<0) i=0; if(i>=total) i=total-1; current=i;
+      document.querySelectorAll('.slide').forEach((el,idx)=>{ el.classList.toggle('active', idx===i); });
+      currentEl.innerText = i+1;
+      const pct = Math.round(((i)/ (total))*100);
+      progressBar.style.width = pct+'%';
+
+      // update nav buttons
+      prevBtn.style.visibility = i===0?'hidden':'visible';
+      nextBtn.innerText = i===total-1? 'Bekijk resultaat':'Volgende ➜';
+
+      // focus first option for accessibility
+      const firstOpt = document.querySelector('#slide-'+i+' .option'); if(firstOpt) firstOpt.focus();
+    }
+
+    prevBtn.addEventListener('click',()=>{ showSlide(current-1); });
+    nextBtn.addEventListener('click',()=>{
+      if(current === total-1){ calculateResult(); } else { showSlide(current+1); }
+    });
+
+    function selectOption(qIdx, el){
+      // toggle selected class
+      document.querySelectorAll('#slide-'+qIdx+' .option').forEach(o=>o.classList.remove('selected'));
+      el.classList.add('selected');
+      answersState[qIdx] = Number(el.dataset.value);
+
+      // auto advance slightly after selecting for UX
+      setTimeout(()=>{ if(qIdx < total-1) showSlide(qIdx+1); else calculateResult(); }, 350);
+    }
+
+    function calculateResult(){
+      // if some unanswered, treat as 0
+      const score = answersState.reduce((s,v)=>s + (v?v:0),0);
+      // categorize
+      let level=''; let color=''; let tips=[];
+      if(score < 40){ level='Laag — Goed bezig!'; color='#bff5d2'; tips=['Blijf vaker fietsen','Bewaar je apparaten en recycle'] }
+      else if(score < 80){ level='Gemiddeld — Kan beter'; color='#fff1b8'; tips=['Minder vlees eten','Koop minder nieuwe kleding','Let op apparaten'] }
+      else { level='Hoog — Actie nodig'; color='#ffd3d3'; tips=['Vliegreizen verminderen','Meer lokaal eten','Verminder online bestellingen'] }
+
+      resultCard.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center;gap:12px"><div><strong>Score: ${score}</strong><div style="color:#456;margin-top:6px">${level}</div></div><div style="width:96px;height:96px;border-radius:12px;background:${color};display:flex;align-items:center;justify-content:center;font-weight:700">${Math.min(100,Math.round(score))}</div></div>
+        <div style="margin-top:12px;color:#345">Tips:<ul>${tips.map(t=>'<li>'+t+'</li>').join('')}</ul></div>
+        <div style="margin-top:10px;color:#234;font-size:13px">Wil je de test opnieuw doen? <button class="btn" id="restartBtn">Opnieuw</button></div>`;
+      resultArea.style.display='block';
+      overlay.scrollTop = overlay.scrollHeight; // scroll to bottom of panel
+
+      document.getElementById('restartBtn').addEventListener('click',()=>{ resetTest(); });
+    }
+
+    function resetTest(){ answersState.fill(null); document.querySelectorAll('.option').forEach(o=>o.classList.remove('selected')); resultArea.style.display='none'; showSlide(0); }
+
+    // Accessibility: close on ESC
+    window.addEventListener('keydown',(e)=>{ if(e.key==='Escape'){ overlay.classList.remove('show'); resultArea.style.display='none'; } });
+
+    // small UX: click outside the panel to close
+    overlay.addEventListener('click',(e)=>{ if(e.target===overlay){ overlay.classList.remove('show'); } });
+
+    // initialize invisible slides and progress
+    showSlide(0);
+  </script>
+</body>
+</html>
